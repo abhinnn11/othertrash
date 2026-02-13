@@ -2,7 +2,7 @@ from mitmproxy import http
 import os
 import time
 
-streamfile = "/tmp/live.ts"
+streamfile = "/tmp/stream/live.ts"
 
 def response(flow: http.HTTPFlow):
 
