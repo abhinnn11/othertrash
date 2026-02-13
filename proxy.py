@@ -1,16 +1,19 @@
 from mitmproxy import http
+import os
+import time
 
-# We capture every HLS request and save it locally
+streamfile = "/tmp/live.ts"
+
 def response(flow: http.HTTPFlow):
 
-    url = flow.request.pretty_url
+    url = flow.request.pretty_url.lower()
 
-    # capture playlists
-    if ".m3u8" in url:
-        with open("/tmp/live.m3u8","wb") as f:
-            f.write(flow.response.content)
-
-    # capture video segments
+    # detect video segments
     if ".ts" in url or ".m4s" in url:
-        with open("/tmp/live.ts","ab") as f:
+
+        # create file if first segment
+        if not os.path.exists(streamfile):
+            print("New stream detected")
+        
+        with open(streamfile, "ab") as f:
             f.write(flow.response.content)
