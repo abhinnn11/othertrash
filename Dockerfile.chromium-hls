@@ -1,21 +1,36 @@
-FROM ubuntu:24.04
+FROM debian:bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    chromium-browser \
-    mitmproxy \
+    chromium \
+    chromium-common \
+    chromium-sandbox \
     ca-certificates \
+    mitmproxy \
     python3 \
     xvfb \
     curl \
+    fonts-liberation \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libxshmfence1 \
     && rm -rf /var/lib/apt/lists/*
 
-# directory for proxy script
 WORKDIR /app
 
 COPY proxy.py /app/proxy.py
 
-EXPOSE 8080
+ENV CHROME_BIN=/usr/bin/chromium
 
-CMD ["bash","-c","xvfb-run -a chromium --headless --no-sandbox --disable-gpu --proxy-server=http://127.0.0.1:8080 https://example.com & mitmdump -s /app/proxy.py --listen-port 8080"]
+CMD bash -c 'xvfb-run -a chromium --no-sandbox --disable-gpu --autoplay-policy=no-user-gesture-required --proxy-server=http://127.0.0.1:8080 "$STREAMURL" & mitmdump -s /app/proxy.py --listen-port 8080'
+
